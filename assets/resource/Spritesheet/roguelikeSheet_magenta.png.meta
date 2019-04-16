@@ -1,0 +1,31 @@
+{
+  "ver": "2.2.0",
+  "uuid": "aeb9b31a-acf0-42e9-8b44-08ec39f4f603",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "subMetas": {
+    "roguelikeSheet_magenta": {
+      "ver": "1.0.3",
+      "uuid": "d08ba153-8360-49df-b174-b68434e99abc",
+      "rawTextureUuid": "aeb9b31a-acf0-42e9-8b44-08ec39f4f603",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 968,
+      "height": 526,
+      "rawWidth": 968,
+      "rawHeight": 526,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
