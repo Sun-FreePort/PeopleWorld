@@ -45,14 +45,14 @@ cc.Class({
 
     	// 初始时间
         this.time = {
-        	ONE_DAY: _gameData.ONE_DAY,
+        	ONE_DAY: Number(_gameData.ONE_DAY),
         };
-        this.nowTime = _gameData.nowTime;
-        this.lastTime = _gameData.lastTime;
+        this.nowTime = Number(_gameData.nowTime);
+        this.lastTime = Number(_gameData.lastTime);
 
         // 初始值
-    	this.areaValue = _gameData.areaValue;
-    	this.peopleValue = _gameData.peopleValue;
+    	this.areaValue = Number(_gameData.areaValue);
+    	this.peopleValue = Number(_gameData.peopleValue);
 
         // 初始的敌人与人
         this.monster = _gameData.monster;
@@ -231,11 +231,11 @@ cc.Class({
     },
 
     openResearchBorder() {
-    	if (this.peopleValue > 12) {
+    	if (this.peopleValue > 7) {
     		this.updateSave();
     		cc.director.loadScene('research');
     	} else {
-            this.addAlert(5, '我们人手不足，无法展开科研行动');
+            this.addAlert(5, '为了支持科研行动，我们需要更多人！');
     	}
         this.updateAlert();
     },

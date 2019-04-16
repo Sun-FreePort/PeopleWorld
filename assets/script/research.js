@@ -40,10 +40,10 @@ cc.Class({
 
         // 初始时间
         this.time = {
-            ONE_DAY: _gameData.ONE_DAY,
+            ONE_DAY: Number(_gameData.ONE_DAY),
         };
-        this.nowTime = _gameData.nowTime;
-        this.lastTime = _gameData.lastTime;
+        this.nowTime = Number(_gameData.nowTime);
+        this.lastTime = Number(_gameData.lastTime);
     },
 
     update (dt) {
@@ -89,15 +89,9 @@ cc.Class({
     },
 
     updateSave() {
-        let _gameData = {
-            ONE_DAY: 2,
-            nowTime: this.nowTime,
-            areaValue: this.areaValue,
-            peopleValue: this.peopleValue,
-            lastTime: this.lastTime,
-            monster: this.monster,
-            people: this.people,
-        };
+        let _gameData = JSON.parse(cc.sys.localStorage.getItem('gameData'));
+        _gameData.nowTime = this.nowTime;
+        _gameData.lastTime = this.lastTime;
         cc.sys.localStorage.setItem('gameData', JSON.stringify(_gameData));
     },
 
