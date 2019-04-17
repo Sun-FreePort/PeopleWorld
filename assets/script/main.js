@@ -1,3 +1,5 @@
+let gameStorage = require("gameStorage");
+
 cc.Class({
     extends: cc.Component,
 
@@ -33,7 +35,7 @@ cc.Class({
     start() {
     	let _gameData = JSON.parse(cc.sys.localStorage.getItem('gameData'));
     	if (!_gameData) {
-            this.initSave();
+            gameStorage.initSave();
     	}
 
     	// 定义时间、名称等无关逻辑内容
@@ -65,6 +67,8 @@ cc.Class({
         this.updateTime();
         this.updatePeople();
         this.enabled = true;
+
+        gameStorage.init(this);
     },
 
     update (dt) {
@@ -120,7 +124,7 @@ cc.Class({
             // 日常更新
             this.updateAlert();
             this.updateTime();
-            this.updateSave();
+            gameStorage.updateSave();
         }
     },
 
@@ -175,64 +179,9 @@ cc.Class({
         this.updateAlert();
     },
 
-    initSave() {
-        let _gameData = {
-            ONE_DAY: 2,
-            nowTime: this.nowTime,
-            areaValue: this.areaValue,
-            peopleValue: this.peopleValue,
-            lastTime: 0,
-            monster: {
-                area: 1,
-                hp: 22,
-                attack: 7,
-                origin: {
-                    area: 1,
-                    hp: 22,
-                    attack: 7,
-                },
-            },
-            people: {
-                hp: 3,
-                attack: 1,
-            },
-        };
-        cc.sys.localStorage.setItem('gameData', JSON.stringify(_gameData));
-    },
-
-    updateSave() {
-        let _gameData = {
-            ONE_DAY: 2,
-            nowTime: this.nowTime,
-            areaValue: this.areaValue,
-            peopleValue: this.peopleValue,
-            lastTime: this.lastTime,
-            monster: this.monster,
-            people: this.people,
-        };
-        cc.sys.localStorage.setItem('gameData', JSON.stringify(_gameData));
-    },
-
-    clearSave() {
-    	this.enabled = false;
-    	this.updateSave();
-    	let _gameData = cc.sys.localStorage.getItem('gameData');
-    	cc.sys.localStorage.setItem('gameData.bac', _gameData);
-    	cc.sys.localStorage.removeItem('gameData');
-    	cc.director.loadScene('main');
-    },
-
-    restorySave() {
-    	this.enabled = false;
-    	this.updateSave();
-    	let _gameData = cc.sys.localStorage.getItem('gameData.bac');
-    	cc.sys.localStorage.setItem('gameData', _gameData);
-    	cc.director.loadScene('main');
-    },
-
     openResearchBorder() {
     	if (this.peopleValue > 7) {
-    		this.updateSave();
+    		gameStorage.updateSave();
     		cc.director.loadScene('research');
     	} else {
             this.addAlert(5, '为了支持科研行动，我们需要更多人！');
