@@ -26,6 +26,10 @@ cc.Class({
             default: null,
             type: cc.Label
         },
+        Menu: {
+            default: null,
+            type: cc.Node
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -35,7 +39,8 @@ cc.Class({
     start() {
     	let _gameData = JSON.parse(cc.sys.localStorage.getItem('gameData'));
     	if (!_gameData) {
-            gameStorage.initSave();
+            gameStorage.init(this);
+            _gameData = gameStorage.initSave();
     	}
 
     	// 定义时间、名称等无关逻辑内容
@@ -190,6 +195,10 @@ cc.Class({
     },
 
     openMenu() {
-        console.info('试图打开菜单')
-    }
+        this.Menu.x = 0;
+    },
+
+    clickMenuMask() {
+        this.Menu.node = 590;
+    },
 });

@@ -9,7 +9,7 @@ cc.Class({
             type: cc.Button
         },
         Tech1Time: 999,
-        
+
         progress :{
             default: null,
             type: cc.Sprite
@@ -31,7 +31,8 @@ cc.Class({
     start () {
         let _gameData = JSON.parse(cc.sys.localStorage.getItem('gameData'));
         if (!_gameData) {
-            gameStorage.initSave();
+            gameStorage.init(this);
+            _gameData = gameStorage.initSave();
         }
 
         this.hasResearch = {

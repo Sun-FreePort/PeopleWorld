@@ -30,6 +30,8 @@ let storage = {
             },
         };
         cc.sys.localStorage.setItem('gameData', JSON.stringify(_gameData));
+
+        return _gameData;
     },
 
     updateSave() {
@@ -46,7 +48,7 @@ let storage = {
 
     getValue(key, _gameData) {
     	if (this.data[key] === undefined) {
-    	    if (_gameData) {
+    	    if (!_gameData) {
                 return 'Error: initSave';
             }
     		return _gameData[key];
