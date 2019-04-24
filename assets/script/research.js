@@ -16,6 +16,11 @@ cc.Class({
         },
 
         progressWidth: 0,
+
+        Menu: {
+            default: null,
+            type: cc.Node
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -70,5 +75,13 @@ cc.Class({
 
     openMainBorder () {
     	cc.director.loadScene('main');
-    }
+    },
+
+    openMenu() {
+        this.Menu.x = 0;
+    },
+
+    clickMenuMask() {
+        this.Menu.node = 590;
+    },
 });

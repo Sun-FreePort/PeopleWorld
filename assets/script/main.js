@@ -30,6 +30,11 @@ cc.Class({
             default: null,
             type: cc.Node
         },
+
+        homelessPrefab: {
+            default: null,
+            type: cc.Prefab
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -66,6 +71,7 @@ cc.Class({
         this.people = _gameData.people;
 
         // 定义逻辑内容
+        this.homeless = {isValid: false};
         this.alertInfos = [];
         this.updateAlert();
         this.updateArea();
@@ -74,6 +80,7 @@ cc.Class({
         this.enabled = true;
 
         gameStorage.init(this);
+        this.initHomeless();
     },
 
     update (dt) {
@@ -126,6 +133,10 @@ cc.Class({
             	this.monsterRest();
             }
 
+            // [23% / 人数] 的几率出现流浪人
+            if (Math.random() < (0.23 / this.peopleValue)) {
+                this.initHomeless();
+            }
             // 日常更新
             this.updateAlert();
             this.updateTime();
@@ -182,6 +193,23 @@ cc.Class({
             this.addAlert(5, '我们没有更多人用来战斗了');
     	}
         this.updateAlert();
+    },
+
+    initHomeless() {
+        if (!this.homeless.isValid) {
+            console.info('Bubble created.');
+            this.homeless = cc.instantiate(this.homelessPrefab);
+            this.node.addChild(this.homeless);
+            let x = Math.random() * this.node.width - this.node.width / 2;
+            let y = Math.random() * this.node.height - this.node.height / 2;
+            this.homeless.setPosition(cc.v2(x, y));
+            this.homeless.getComponent('Bubble').id = parseInt(Math.random() * 1000);
+            this.homeless.getComponent('Bubble').scene = this;
+
+            this.homelessSchedule = this.scheduleOnce(function() {
+                this.homeless.destroy();
+            }, Math.random() * 6);
+        }
     },
 
     openResearchBorder() {

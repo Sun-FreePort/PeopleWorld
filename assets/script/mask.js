@@ -22,7 +22,7 @@ cc.Class({
 
     onLoad () {
         this.node.on(cc.Node.EventType.MOUSE_DOWN, function (event) {
-            this.Menu.x = 590;
+            this.Menu.x = 640;
         }, this);
     },
 
