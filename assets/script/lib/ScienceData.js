@@ -1,0 +1,90 @@
+"use strict";
+
+var Class = require('./generateClass');
+var LocalStorageApi = require('./LocalStorageApi');
+var ScienceData = Class({
+    extends: LocalStorageApi,
+    data: {
+        configKey: 'scienceDate',
+        positionInfo: new Array(),
+        _configP: new Array({
+            uuid:'',
+            p: null,
+            n: 0,
+            parentn: -1,
+            on_off: 1, 
+        },{
+            uuid:'',
+            p: null,
+            n: 1,
+            parentn: 0,
+            on_off: 0,
+        },{
+            uuid:'',
+            p: null,
+            n: 2,
+            parentn: 0,
+            on_off: 0, 
+        }),
+    },
+
+    /**
+     * 初始化坐标，非第一次打开不需要初始化
+     * @param {object} positionObj 坐标集合
+     * @return null
+     */
+    initPosition (positionObj) {
+        if (this.getValue(this.configKey)) {
+            let tempValue = this.getValueObj(this.configKey);
+            for (let key in tempValue) {
+                if (tempValue.hasOwnProperty(key)) {
+                    this.positionInfo.push(tempValue[key]);
+                }
+            }
+            // cc.log(this.positionInfo);
+            return;
+        }
+        try {
+            for (let key in this._configP) {
+                if (this._configP.hasOwnProperty(key)) {
+                    let p = positionObj[this._configP[key].n] 
+                                        ? positionObj[this._configP[key].n] 
+                                        : null;
+                    let tempObj = {
+                        p: p,
+                        n: this._configP[key].n,
+                        parentn: this._configP[key].parentn,
+                        on_off: this._configP[key].on_off,
+                    };
+                    this.positionInfo.push(tempObj);
+                }
+            }
+        } catch (error) {
+            cc.log(error);
+        }
+        this._saveConfig();
+    },
+
+    /**
+     * 把科技数据存到本地
+     * @param {Array} config 坐标数据 
+     * @return null
+     */
+    _saveConfig () {
+        cc.log(this.positionInfo);
+        this.setValueObj(this.configKey, this.positionInfo);
+    },
+
+    updatePosition () {
+        //TODO
+    },
+
+    /**
+     * 判断科技是否允许点亮
+     */
+    judge () {
+        //TODO
+    },
+});
+
+module.exports = ScienceData;
