@@ -12,19 +12,49 @@ var ScienceData = Class({
             p: null,
             n: 0,
             parentn: -1,
-            on_off: 1, 
+            status: 4, //1:不能研发，2:可以研发，3:研发中，4:研发完成
+            time: 10,
+            title: '金融',
         },{
             uuid:'',
             p: null,
             n: 1,
             parentn: 0,
-            on_off: 0,
+            status: 2,
+            time: 15,
+            title: '代币化',
         },{
             uuid:'',
             p: null,
             n: 2,
-            parentn: 0,
-            on_off: 0, 
+            parentn: 1,
+            status: 2, 
+            time: 20,
+            title: '自由枷锁',
+        },{
+            uuid:'',
+            p: null,
+            n: 3,
+            parentn: 2,
+            status: 2, 
+            time: 20,
+            title: '抵御通胀',
+        },{
+            uuid:'',
+            p: null,
+            n: 4,
+            parentn: 2,
+            status: 2, 
+            time: 20,
+            title: '公平税收',
+        },{
+            uuid:'',
+            p: null,
+            n: 5,
+            parentn: 2,
+            status: 2, 
+            time: 20,
+            title: '商业税收',
         }),
     },
 
@@ -34,6 +64,7 @@ var ScienceData = Class({
      * @return null
      */
     initPosition (positionObj) {
+        this.positionInfo = [];
         if (this.getValue(this.configKey)) {
             let tempValue = this.getValueObj(this.configKey);
             for (let key in tempValue) {
@@ -51,10 +82,13 @@ var ScienceData = Class({
                                         ? positionObj[this._configP[key].n] 
                                         : null;
                     let tempObj = {
+                        uuid:this._configP[key].uuid,
                         p: p,
                         n: this._configP[key].n,
                         parentn: this._configP[key].parentn,
-                        on_off: this._configP[key].on_off,
+                        status: this._configP[key].status,
+                        time: this._configP[key].time,
+                        title: this._configP[key].title,
                     };
                     this.positionInfo.push(tempObj);
                 }
@@ -62,7 +96,7 @@ var ScienceData = Class({
         } catch (error) {
             cc.log(error);
         }
-        this._saveConfig();
+        this.saveConfig();
     },
 
     /**
@@ -70,8 +104,7 @@ var ScienceData = Class({
      * @param {Array} config 坐标数据 
      * @return null
      */
-    _saveConfig () {
-        cc.log(this.positionInfo);
+    saveConfig () {
         this.setValueObj(this.configKey, this.positionInfo);
     },
 

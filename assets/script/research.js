@@ -28,7 +28,7 @@ cc.Class({
     onLoad () {
     	this.actionTech = [];
 
-    	this.progress.node.width = this.progressWidth;
+    	// this.progress.node.width = this.progressWidth;
     },
     // 作图：科技研究完毕的状态
     // 作图：科技启动研究的状态
@@ -62,15 +62,9 @@ cc.Class({
 
         if (this.nowTime > this.lastTime + 2) {
             this.lastTime += this.time.ONE_DAY;
-
-        	this.researchTech1();
+            
             gameStorage.updateSave();
         }
-    },
-
-    // 研究科技1
-    researchTech1 () {
-    	this.progress.node.width = ++this.progressWidth;
     },
 
     openMainBorder () {
