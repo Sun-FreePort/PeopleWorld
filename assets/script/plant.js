@@ -26,7 +26,7 @@ cc.Class({
 
     exit() {
     	if(cc.sys.os == cc.sys.OS_ANDROID){
-    		cc.director.end();
+    		cc.game.end();
     	}
     },
 });
