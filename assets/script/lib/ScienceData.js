@@ -28,7 +28,7 @@ var ScienceData = Class({
             p: null,
             n: 2,
             parentn: 1,
-            status: 2, 
+            status: 2,
             time: 20,
             title: '自由枷锁',
         },{
@@ -36,7 +36,7 @@ var ScienceData = Class({
             p: null,
             n: 3,
             parentn: 2,
-            status: 2, 
+            status: 2,
             time: 20,
             title: '抵御通胀',
         },{
@@ -44,7 +44,7 @@ var ScienceData = Class({
             p: null,
             n: 4,
             parentn: 2,
-            status: 2, 
+            status: 2,
             time: 20,
             title: '公平税收',
         },{
@@ -52,7 +52,7 @@ var ScienceData = Class({
             p: null,
             n: 5,
             parentn: 2,
-            status: 2, 
+            status: 2,
             time: 20,
             title: '商业税收',
         }),
@@ -78,8 +78,8 @@ var ScienceData = Class({
         try {
             for (let key in this._configP) {
                 if (this._configP.hasOwnProperty(key)) {
-                    let p = positionObj[this._configP[key].n] 
-                                        ? positionObj[this._configP[key].n] 
+                    let p = positionObj[this._configP[key].n]
+                                        ? positionObj[this._configP[key].n]
                                         : null;
                     let tempObj = {
                         uuid:this._configP[key].uuid,
@@ -101,7 +101,7 @@ var ScienceData = Class({
 
     /**
      * 把科技数据存到本地
-     * @param {Array} config 坐标数据 
+     * @param {Array} config 坐标数据
      * @return null
      */
     saveConfig () {
@@ -116,7 +116,7 @@ var ScienceData = Class({
      * 判断科技是否允许点亮
      */
     judge () {
-        //TODO
+        // TODO
     },
 });
 

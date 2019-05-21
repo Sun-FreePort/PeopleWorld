@@ -1,11 +1,11 @@
 /**
- * 存档库
+ * 游戏数据存储
  *
  * 设置或移除存储值，只需设定 initSave 方法的内容
  */
 let storage = {
     constructor() {
-        this.data = false;
+        this.scene = false;
     },
 
     /**
@@ -16,7 +16,7 @@ let storage = {
      * @param gameObj
      */
     init(gameObj) {
-        this.data = gameObj;
+        this.scene = gameObj;
     },
 
     /**
@@ -24,23 +24,28 @@ let storage = {
      */
     initSave() {
         let _gameData = {
-            ONE_DAY: 2,
-            nowTime: 0,
-            areaValue: 2,
+            design: {
+                one: 0,
+                two: 0,
+            },  // 科技
+            alertInfos: [],  // 主界面提醒信息
+            ONE_DAY: 2,  // 每游戏日对应时间
+            nowTime: 0,  // 当前时间
+            areaValue: 2,  // 面积
             unitAreaVolume: 10,  // 单位面积可容纳人口
             peopleValue: 10,  // 人口
-            lastTime: 0,  //
-            monster: {
-                area: 1,
-                hp: 22,
-                attack: 7,
-                origin: {
+            lastTime: 0,  // 最后更新时间
+            monster: {  // 野兽信息
+                area: 1,  // 野兽占据的面积
+                hp: 22,  // 野兽的生命
+                attack: 7,  // 野兽的伤害
+                origin: {  // 野兽的完整值存档
                     area: 1,
                     hp: 22,
                     attack: 7,
                 },
             },
-            people: {
+            people: {  // 个人的信息
                 hp: 3,
                 attack: 1,
             },
@@ -72,21 +77,22 @@ let storage = {
         if (_gameData === 0) {
             _gameData = JSON.parse(cc.sys.localStorage.getItem('gameData'));
         }
-        if (this.data[key] === undefined) {
+        if (this.scene.data[key] === undefined) {
             return (!_gameData) ? 'Error: initSave' : _gameData[key];
         }
-        return this.data[key];
+        return this.scene.data[key];
     },
 
     /**
      * 清理存档
      */
     clearSave() {
-        this.data.enabled = false;
+        this.scene.data.enabled = false;
         this.updateSave();
         let _gameData = cc.sys.localStorage.getItem('gameData');
         cc.sys.localStorage.setItem('gameData.bac', _gameData);
         cc.sys.localStorage.removeItem('gameData');
+        this.initSave();
         cc.director.loadScene('main');
     },
 
@@ -94,7 +100,7 @@ let storage = {
      * 复原存档（至上次清理前）
      */
     restoreSave() {
-        this.data.enabled = false;
+        this.scene.data.enabled = false;
         this.updateSave();
         let _gameData = cc.sys.localStorage.getItem('gameData.bac');
         cc.sys.localStorage.setItem('gameData', _gameData);

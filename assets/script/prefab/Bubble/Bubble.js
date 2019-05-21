@@ -16,7 +16,6 @@ cc.Class({
 
     start () {
         this.node.on('touchend', function (event) {
-            console.info(this.id);
             this.scene.unschedule(this.homelessSchedule);
             this.scene.peopleValue++;
             this.scene.updatePeople();

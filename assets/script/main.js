@@ -1,9 +1,21 @@
 let gameStorage = require("gameStorage");
+let mainAction = require("mainAction");
 
+/**
+ * 主场景
+ *
+ * 场景负责操作界面、执行本场景独有的逻辑、为其他逻辑库提供全局变量
+ * 全局执行的逻辑，原则上放在 *Action 逻辑库中
+ */
 cc.Class({
     extends: cc.Component,
 
     properties: {
+        Money: {
+            default: null,
+            type: cc.Label
+        },
+
         People: {
             default: null,
             type: cc.Label
@@ -41,103 +53,52 @@ cc.Class({
     start() {
         let _gameData = JSON.parse(cc.sys.localStorage.getItem('gameData'));
         if (!_gameData) {
-            gameStorage.init(this);
             _gameData = gameStorage.initSave();
         }
+        this.data = _gameData;
 
         // 定义时间、名称等无关逻辑内容
         this.transName = {
+            'money': '货币',
             'people': '居民',
             'area': '面积',
             'time': '时间',
         };
 
-        // 初始时间
-        this.time = {
-            ONE_DAY: Number(_gameData.ONE_DAY),
-        };
-        this.nowTime = Number(_gameData.nowTime);
-        this.lastTime = Number(_gameData.lastTime);
-
-        // 初始值
-        this.unitAreaVolume = Number(_gameData.unitAreaVolume);
-        this.areaValue = Number(_gameData.areaValue);
-        this.peopleValue = Number(_gameData.peopleValue);
-
-        // 初始的敌人与人
-        this.monster = _gameData.monster;
-        this.people = _gameData.people;
+        if (!this.data.design.one) {
+            this.Money.node.opacity = 0;
+        }
 
         // 定义逻辑内容
-        this.homeless = {isValid: false};
-        this.alertInfos = [];
         this.updateAlert();
         this.updateArea();
         this.updateTime();
         this.updatePeople();
         this.enabled = true;
+        this.homelessHas = false;
 
         gameStorage.init(this);
+        mainAction.init(this);
     },
 
     update (dt) {
         // 每秒更新
-        this.nowTime += dt;
+        this.data.nowTime += dt;
 
-        if (this.enabled && this.nowTime > this.lastTime + 2) {
-            // 人数增长
-            this.lastTime += this.time.ONE_DAY;
+        if (this.enabled && this.data.nowTime > this.data.lastTime + 2) {
+            this.data.lastTime += this.data.ONE_DAY;
 
-            if (this.peopleValue / this.unitAreaVolume > this.areaValue) {
-                if (Math.random() < (8 / this.peopleValue)) {
-                    let human = Math.floor(this.peopleValue * 0.4);
-                    for (let i = 0; human > 0; i++) {
-                        // 野兽袭击人们
-                        human = Math.floor((human * this.people.hp - this.monster.attack) / this.people.hp);
-                        if (human < 0) {
-                            console.info(human)
-                            this.peopleValue -= Math.floor(this.peopleValue * 0.4);
-                            this.updatePeople();
-                            this.addAlert(6, '人们自发的组织了远征军，但出发后就再无音讯');
-                            break;
-                        }
-                        // 幸存者反击野兽
-                        this.monster.hp -= this.people.attack * human;
-                        // 检查野兽是否存活
-                        if (this.monster.hp < 0) {
-                            this.addAlert(6, '人们自发的组织了远征军，他们击溃了远方的怪兽，获取了新土地');
-                            this.areaValue += this.monster.area;
-                            this.updateArea();
-                            this.peopleValue -= Math.floor(this.peopleValue * 0.4) - human;
-                            this.updatePeople();
-
-                            this.monster = {
-                                area: this.monster.origin.area * 1.1,
-                                hp: this.monster.origin.hp * 1.25,
-                                attack: this.monster.origin.attack * 1.17,
-                                origin: {
-                                    area: this.monster.origin.area * 1.1,
-                                    hp: this.monster.origin.hp * 1.25,
-                                    attack: this.monster.origin.attack * 1.17,
-                                },
-                            }
-                            break;
-                        }
-                    }
-                } else {
-                    this.addAlert(6, '人口增长停滞：我们的居民没有更多土地居住了');
-                }
-            } else {
-                this.peopleValue = this.peopleValue * 1.01;
-                this.updatePeople();
-                this.monsterRest();
-            }
+            // 全局行为
+            mainAction.globalAction();
 
             // [66% / 人数] 的几率出现流浪人
-            if (Math.random() < 0.66 / (this.peopleValue - 2)) {
+            if (Math.random() < 0.66 / (this.data.peopleValue - 2)) {
                 this.initHomeless();
             }
+            
             // 日常更新
+            this.updateArea();
+            this.updatePeople();
             this.updateAlert();
             this.updateTime();
             gameStorage.updateSave();
@@ -145,79 +106,70 @@ cc.Class({
     },
 
     updatePeople() {
-        this.People.string = this.transName.people + '：' + this.peopleValue.toFixed(0);
+        this.People.string = this.transName.people + '：' + this.data.peopleValue.toFixed(0);
+    },
+
+    updateMoney() {
+        this.Money.string = this.transName.money + '：' + this.data.moneyValue.toFixed(0);
     },
 
     updateTime() {
-        this.Time.string = `${this.transName.time}：${(this.nowTime / this.time.ONE_DAY).toFixed(0)} 日`;
+        this.Time.string = `${this.transName.time}：${(this.data.nowTime / this.data.ONE_DAY).toFixed(0)} 日`;
     },
 
     updateArea() {
-        this.Area.string = this.transName.area + '：' + this.areaValue.toFixed(0);
-    },
-
-    addAlert (time, info) {
-        let realTime = this.nowTime + time;
-        this.alertInfos.push([realTime, (this.nowTime / this.time.ONE_DAY).toFixed(0) + '日，' + info]);
+        this.Area.string = this.transName.area + '：' + this.data.areaValue.toFixed(0);
     },
 
     updateAlert() {
-        if (this.alertInfos.length === 0) {
-            this.addAlert(6, '宁静的一天');
-        }
-
         let alert = [];
-        for (var i = this.alertInfos.length - 1; i >= 0; i--) {
-            if (this.alertInfos[i][0] < this.nowTime) {
+        for (var i = this.data.alertInfos.length - 1; i >= 0; i--) {
+            if (this.data.alertInfos[i][0] < this.data.nowTime) {
+                this.data.alertInfos.shift();
                 continue;
             }
-            alert.push(this.alertInfos[i][1]);
+            alert.push(this.data.alertInfos[i][1]);
         }
         this.Alert.string = alert.join('\n');
         this.Alert.node.color = new cc.Color(174, 255, 205);
     },
 
-    monsterRest() {
-        if (this.monster.hp < this.monster.origin.hp) {
-            this.monster.hp += this.monster.origin.hp * 0.05;
-        } else if (this.monster.hp > this.monster.origin.hp) {
-            this.monster.hp = this.monster.origin.hp;
-        }
-    },
-
     fightWar() {
-        if (this.peopleValue > 8) {
+        if (this.data.peopleValue > 8) {
+            mainAction.addAlert(7, '机构组织了一场远征');
             // 启动战斗
-            this.addAlert(6, '机构组织了一场远征');
+            mainAction.intrude();
         } else {
-            this.addAlert(6, '我们没有更多人用来战斗了');
+            mainAction.addAlert(7, '我们没有更多人用来战斗了');
         }
         this.updateAlert();
     },
 
     initHomeless() {
-        if (!this.homeless.isValid) {
-            console.info('Bubble created.');
+        if (!this.homelessHas) {
             this.homeless = cc.instantiate(this.homelessPrefab);
             this.node.addChild(this.homeless);
             let x = Math.random() * this.node.width - this.node.width / 2;
             let y = Math.random() * this.node.height - this.node.height / 2;
             this.homeless.setPosition(cc.v2(x, y));
-            this.homeless.getComponent('Bubble').id = parseInt(Math.random() * 1000);
-            this.homeless.getComponent('Bubble').scene = this;
+
+            this.homeless.getComponent('bubble').id = parseInt(Math.random() * 1000);
+            this.homeless.getComponent('bubble').scene = this;
 
             this.homelessSchedule = this.scheduleOnce(function() {
+                this.homelessHas = false;
                 this.homeless.destroy();
             }, Math.random() * 6);
+            this.homelessHas = true;
         }
     },
 
     openResearchBorder() {
-        if (this.peopleValue > 7) {
+        if (this.data.peopleValue > 7) {
             gameStorage.updateSave();
             cc.director.loadScene('research');
         } else {
-            this.addAlert(6, '为了支持科研行动，我们需要更多人！');
+            mainAction.addAlert(7, '为了支持科研行动，我们需要更多人！');
         }
         this.updateAlert();
     },
